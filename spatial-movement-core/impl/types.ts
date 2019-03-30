@@ -1,4 +1,4 @@
-import { HasBounds } from "../api";
+import { HasBounds, Bounds } from "../api";
 import { HasBoundsHtmlElement } from "../instances";
 
 // generic types
@@ -6,7 +6,7 @@ type GHasWorld<T, IN, I extends HasBounds<T>> = (dict: I) => ({
     worldFor: (instance: IN) => T[]
 })
 type GHasTarget<T, IN, I extends HasBounds<T>> = (dict: HasBounds<T>) => ({
-    targetFor: (instance: IN) => T
+    targetFor: (instance: IN) => T | null
 })
 
 // concrete instances for InternalWorld
@@ -19,12 +19,12 @@ export type InternalWorld = GInternalWorld<Element, typeof HasBoundsHtmlElement>
 
 export type HasWorld<T> = ReturnType<GHasWorld<Element, T, typeof HasBoundsHtmlElement>>
 export const HasWorldInternalWorld: HasWorld<InternalWorld> = {
-    worldFor: (instance: InternalWorld) => instance.nodes
+    worldFor: (instance: InternalWorld) => instance ? instance.nodes : []
 }
 
 export type HasTarget<T> = ReturnType<GHasTarget<Element, T, typeof HasBoundsHtmlElement>>
 export const HasTargetInternalWorld: HasTarget<InternalWorld> = {
-    targetFor: (instance: InternalWorld) => instance.target
+    targetFor: (instance: InternalWorld) => instance ? instance.target : null
 }
 
 export type WithTarget<T> = {

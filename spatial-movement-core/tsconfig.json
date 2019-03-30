@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "allowJS": false,
+        "checkJs": false,
+        "target": "es2018",
+        "module": "commonjs",
+        "lib": ["es2018", "dom"],
+        "jsx": "react",
+        "sourceMap": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "strict": true,
+        "noImplicitAny": true,
+        "outDir": "target"
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

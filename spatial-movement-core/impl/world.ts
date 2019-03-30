@@ -3,7 +3,8 @@ import { InternalWorld, GInternalWorld, Direction } from "./types";
 import { navigate } from "./navigate";
 
 export const gbuilder = <T, I extends HasBounds<T>>(dict: I) => (): GSpatialMovementApiGen<T, I> => {
-    const buildApi = (lastWorld: GInternalWorld<T, I>) => ({
+    // todo: use generic HasWorld & HasTarget
+    const buildApi = (lastWorld: GInternalWorld<T, I>): GSpatialMovementApiGen<T, I> => ({
         add: addNode(lastWorld),
         remove: removeNode(lastWorld),
         focus: focus(lastWorld),
@@ -39,12 +40,16 @@ export const gbuilder = <T, I extends HasBounds<T>>(dict: I) => (): GSpatialMove
         }
     }
     const focus = (lastWorld: GInternalWorld<T, I>) => (node: T): GSpatialMovementApiGen<T, I> => {
+        if(!lastWorld)
+            return buildApi(lastWorld)
         if(lastWorld.nodes.find(e => e == node))
             return buildApi(Object.assign({}, lastWorld, {target: node}))
         else
             return buildApi(lastWorld)
     }
     const movement = (lastWorld: GInternalWorld<T, I>) => (direction: Direction) => () => {
+        if(!lastWorld)
+            return null
         return navigate<T, I>(dict)(lastWorld.nodes.filter((e) => e != lastWorld.target), lastWorld.target, direction)
     }
 

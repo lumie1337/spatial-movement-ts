@@ -14,18 +14,20 @@ const boundsWithTarget = <T, I extends HasBounds<T>>(dict: I) => (candidate: T):
 /**
  * Filters nodes that are not eligable for a particular directional move.
  */
-const filterDirection = <T>(candidateBounds: BoundsWithTarget<T>[], targetBounds: BoundsWithTarget<T>, direction: Direction): BoundsWithTarget<T>[] => {
+const predDirection = <T>(targetBounds: BoundsWithTarget<T>, direction: Direction) => (candidate: BoundsWithTarget<T>): boolean => {
     switch (direction) {
         case 'w':
-            return candidateBounds.filter((candidate) => candidate.left < targetBounds.left)
+            return candidate.left < targetBounds.left
         case 'e':
-            return candidateBounds.filter((candidate) => candidate.right > targetBounds.right)
+            return candidate.right > targetBounds.right
         case 'n':
-            return candidateBounds.filter((candidate) => candidate.top < targetBounds.top)
+            return candidate.top < targetBounds.top
         case 's':
-            return candidateBounds.filter((candidate) => candidate.bottom > targetBounds.bottom)
+            return candidate.bottom > targetBounds.bottom
     }
 }
+const filterDirection = <T>(candidateBounds: BoundsWithTarget<T>[], targetBounds: BoundsWithTarget<T>, direction: Direction): BoundsWithTarget<T>[] =>
+    candidateBounds.filter(predDirection(targetBounds, direction))
 
 /**
  * Cardinal Directions
@@ -62,7 +64,7 @@ const orientationFor = (origin: Bounds, node: Bounds): Orientation | null => {
         else if (node.top > origin.bottom) { // bottom
             return 's'
         } else {
-            return null
+            return null // overlapping
         }
     }
 }
@@ -140,19 +142,19 @@ const sortCandidates = <T>(candidates: BoundsWithTarget<T>[], target: BoundsWith
             }
         } else if (orientation.length == 2) {
             return {
-                priority: 2, // higher is better
+                priority: 2,
                 score: edgeDistance(target, a, orientation),
                 secondaryScore: centerDistance(target, a)
             }
         } else {
             return {
-                priority: 1, // higher is better
+                priority: 1,
                 score: simpleDistance(target, a, orientation),
                 secondaryScore: centerDistance(target, a)
             }
         }
     }
-    return candidates.sort((a: Bounds, b: Bounds) => {
+    return candidates.slice().sort((a: Bounds, b: Bounds) => {
         const sa = score(a)
         const sb = score(b)
         if (sa.priority == sb.priority) {
