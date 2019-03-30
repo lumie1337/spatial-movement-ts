@@ -1,3 +1,4 @@
+import { Option } from "./lib/option";
 
 /**
  * A 2-dimensional point.

@@ -1,3 +1,3 @@
 
 // fixme: simple option type as union for now
-type Option<T> = T | null
+export type Option<T> = T | null

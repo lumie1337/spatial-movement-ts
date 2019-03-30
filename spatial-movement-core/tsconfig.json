@@ -13,6 +13,11 @@
         "noImplicitAny": true,
         "outDir": "target"
     },
+    "include": [
+        "src",
+        "tests",
+        "types"
+    ],
     "exclude": [
         "node_modules"
     ]

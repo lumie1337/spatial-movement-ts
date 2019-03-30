@@ -72,7 +72,7 @@ const orientationFor = (origin: Bounds, node: Bounds): Orientation | null => {
 /**
  * calculates the straight line distance when nodes overlap on directions.
  */
-const simpleDistance = (origin: Bounds, node: Bounds, orientation: Orientation): number | null => {
+const simpleDistance = (origin: Bounds, node: Bounds, orientation: Orientation): number => {
     switch (orientation) {
         case 'n':
             return node.bottom - origin.top
@@ -83,7 +83,7 @@ const simpleDistance = (origin: Bounds, node: Bounds, orientation: Orientation):
         case 'w':
             return node.right - origin.left
     }
-    return null
+    return 0
 }
 
 /**
@@ -116,7 +116,7 @@ const edgeDistance = (origin: Bounds, node: Bounds, orientation: Orientation): n
         case 'sw':
             return euclideanDistance({ x: node.right, y: node.top }, {x: origin.left, y: origin.bottom})
     }
-    return null;
+    return 0;
 }
 
 const squared = (n: number): number => n * n
@@ -133,6 +133,8 @@ const euclideanDistance = (p1: Point2D, p2: Point2D): number => (
 const sortCandidates = <T>(candidates: BoundsWithTarget<T>[], target: BoundsWithTarget<T>, direction: Direction): BoundsWithTarget<T>[] => {
     const score = (a: Bounds): { priority: number, score: number, secondaryScore: number } => {
         const orientation = orientationFor(target, a)
+        if (!orientation)
+            throw new Error("Overlapping boxes not supported.")
         if (orientation == direction)
         {
             return {
